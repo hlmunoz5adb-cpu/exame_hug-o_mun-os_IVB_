@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS-V // Cyberpunk & Neon Video Game Vault</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            900: '#090514',
+                            800: '#13092b',
+                            700: '#22104d',
+                            600: '#381675',
+                            500: '#5b1ebd',
+                            400: '#8b3dff',
+                            300: '#b075ff',
+                            cyan: '#00f0ff',
+                            magenta: '#ff007f',
+                            yellow: '#ffe600'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-purple': '0 0 20px rgba(139, 61, 255, 0.6), inset 0 0 15px rgba(139, 61, 255, 0.3)',
+                        'neon-cyan': '0 0 20px rgba(0, 240, 255, 0.6), inset 0 0 15px rgba(0, 240, 255, 0.3)',
+                        'neon-magenta': '0 0 20px rgba(255, 0, 127, 0.6), inset 0 0 15px rgba(255, 0, 127, 0.3)',
+                        'card-glow': '0 10px 30px -10px rgba(139, 61, 255, 0.4)'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        cyber: ['Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #05020a;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Custom Neon Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090514;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #5b1ebd;
+            border-radius: 4px;
+            box-shadow: 0 0 10px #8b3dff;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b3dff;
+        }
+
+        /* Scanline overlay effect */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Glowing text effects */
+        .text-glow-purple {
+            text-shadow: 0 0 10px rgba(139, 61, 255, 0.8), 0 0 20px rgba(139, 61, 255, 0.5), 0 0 30px rgba(139, 61, 255, 0.3);
+        }
+        .text-glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+        .text-glow-magenta {
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.8), 0 0 20px rgba(255, 0, 127, 0.5);
+        }
+
+        /* Cyberpunk border clip paths */
+        .cyber-border {
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+        }
+        .cyber-border-sm {
+            clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-20px) translateX(10px); }
+            100% { transform: translateY(0px) translateX(0px); }
+        }
+        .floating-particle {
+            animation: floatParticle 6s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-cyber-900 text-gray-100 min-h-screen relative selection:bg-cyber-400 selection:text-white">
+
+    <div class="fixed inset-0 scanlines z-50"></div>
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-cyber-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute top-1/3 right-10 w-96 h-96 bg-cyber-magenta/15 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute bottom-10 left-1/3 w-[500px] h-[500px] bg-cyber-cyan/10 rounded-full blur-[160px] pointer-events-none"></div>
+
+    <header class="sticky top-0 z-40 bg-cyber-900/80 backdrop-blur-md border-b border-cyber-600/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded bg-gradient-to-br from-cyber-400 to-cyber-magenta flex items-center justify-center shadow-neon-purple">
+                    <i class="fa-solid fa-gamepad text-white text-xl animate-pulse"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-wider bg-gradient-to-r from-cyber-cyan via-cyber-400 to-cyber-magenta bg-clip-text text-transparent text-glow-purple">
+                        NEXUS<span class="text-cyber-cyan">//</span>V
+                    </span>
+                    <p class="text-[10px] tracking-widest text-cyber-300 font-cyber">CYBER_VAULT_v2.09</p>
+                </div>
+            </div>
+
+            <!-- Search bar & Quick controls -->
+            <div class="hidden md:flex items-center space-x-4">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-cyber-300">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Buscar juego, héroe, género..." 
+                        class="w-64 lg:w-80 pl-10 pr-4 py-2 bg-cyber-800/80 border border-cyber-600/60 rounded-lg text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:border-cyber-cyan focus:ring-1 focus:ring-cyber-cyan transition-all cyber-border-sm">
+                </div>
+                <button onclick="playCyberSound('click')" id="soundToggle" class="p-2.5 rounded-lg bg-cyber-800 border border-cyber-600/60 text-cyber-cyan hover:bg-cyber-700 hover:shadow-neon-cyan transition-all" title="Activar/Desactivar efectos de audio">
+                    <i class="fa-solid fa-volume-high" id="soundIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative pt-12 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="relative rounded-3xl overflow-hidden border border-cyber-500/40 bg-gradient-to-r from-cyber-800/90 via-cyber-700/60 to-cyber-900/90 shadow-neon-purple p-8 sm:p-12 lg:p-16">
+            <!-- Background decorative grid inside hero -->
+            <div class="absolute inset-0 bg-[radial-gradient(#8b3dff_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none"></div>
+            
+            <div class="relative z-10 max-w-2xl">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-600/40 border border-cyber-400/50 text-cyber-cyan text-xs font-semibold mb-6 tracking-wide shadow-neon-cyan">
+                    <span class="w-2 h-2 rounded-full bg-cyber-cyan animate-ping"></span>
+                    <span>NUEVO LANZAMIENTO // TEMPORADA CYBER 2026</span>
+                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 leading-tight">
+                    EXPLORA EL <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-cyber-400 to-cyber-magenta text-glow-purple">UNIVERSO VIRTUAL</span>
+                </h1>
+                <p class="text-gray-300 text-base sm:text-lg mb-8 leading-relaxed">
+                    Sumérgete en la galería definitiva de títulos cyberpunk, RPGs futuristas y mundos distópicos. Filtra por categoría, descubre la ficha técnica y prepárate para conectar.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#gallerySection" onclick="playCyberSound('click')" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyber-400 to-cyber-magenta text-white font-bold shadow-neon-purple hover:scale-105 transition-transform flex items-center space-x-3 cyber-border">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Explorar Catálogo</span>
+                    </a>
+                    <button onclick="openFeaturedModal()" class="px-8 py-3.5 rounded-xl bg-cyber-800/90 border border-cyber-cyan/60 text-cyber-cyan font-bold shadow-neon-cyan hover:bg-cyber-700 hover:scale-105 transition-all flex items-center space-x-3 cyber-border">
+                        <i class="fa-solid fa-star text-cyber-yellow"></i>
+                        <span>Juego Destacado</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floating Hero Badge / Decorative Cyber Element -->
+            <div class="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center justify-center p-6 rounded-2xl bg-cyber-900/60 border border-cyber-400/30 backdrop-blur-md shadow-neon-purple floating-particle">
+                <i class="fa-solid fa-microchip text-5xl text-cyber-cyan mb-3"></i>
+                <span class="text-xs font-mono text-cyber-300 tracking-wider">SYSTEM STATUS</span>
+                <span class="text-sm font-bold text-green-400">100% OPERATIONAL</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallerySection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-cyber-600/30 pb-6">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center space-x-3">
+                    <i class="fa-solid fa-layer-group text-cyber-400"></i>
+                    <span>CATÁLOGO DE TÍTULOS</span>
+                </h2>
+                <p class="text-xs sm:text-sm text-gray-400 mt-1">Selecciona un género o busca tu próxima aventura digital</p>
+            </div>
+
+            <!-- Mobile search fallback -->
+            <div class="md:hidden">
+                <div class="relative w-full">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-cyber-300">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="searchInputMobile" placeholder="Buscar juego..." 
+                        class="w-full pl-10 pr-4 py-2.5 bg-cyber-800 border border-cyber-600 rounded-lg text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:border-cyber-cyan">
+                </div>
+            </div>
+
+            <!-- Genre Filter Buttons -->
+            <div class="flex flex-wrap gap-2" id="filterContainer">
+                <button onclick="filterGames('todos')" data-filter="todos" class="filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gradient-to-r from-cyber-500 to-cyber-600 text-white shadow-neon-purple transition-all cyber-border-sm">
+                    Todos
+                </button>
+                <button onclick="filterGames('Acción')" data-filter="Acción" class="filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-cyber-800 text-gray-300 border border-cyber-600 hover:border-cyber-cyan hover:text-cyber-cyan transition-all cyber-border-sm">
+                    Acción
+                </button>
+                <button onclick="filterGames('RPG')" data-filter="RPG" class="filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-cyber-800 text-gray-300 border border-cyber-600 hover:border-cyber-cyan hover:text-cyber-cyan transition-all cyber-border-sm">
+                    RPG
+                </button>
+                <button onclick="filterGames('Aventura')" data-filter="Aventura" class="filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-cyber-800 text-gray-300 border border-cyber-600 hover:border-cyber-cyan hover:text-cyber-cyan transition-all cyber-border-sm">
+                    Aventura
+                </button>
+                <button onclick="filterGames('Indie')" data-filter="Indie" class="filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-cyber-800 text-gray-300 border border-cyber-600 hover:border-cyber-cyan hover:text-cyber-cyan transition-all cyber-border-sm">
+                    Indie
+                </button>
+                <button onclick="filterGames('Estrategia')" data-filter="Estrategia" class="filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-cyber-800 text-gray-300 border border-cyber-600 hover:border-cyber-cyan hover:text-cyber-cyan transition-all cyber-border-sm">
+                    Estrategia
+                </button>
+            </div>
+        </div>
+
+        <div id="gamesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Dynamic game cards will be inserted via JavaScript -->
+        </div>
+
+        <!-- Empty state when no games match -->
+        <div id="noResults" class="hidden text-center py-20">
+            <i class="fa-solid fa-triangle-exclamation text-5xl text-cyber-magenta mb-4 animate-bounce"></i>
+            <h3 class="text-xl font-bold text-white">NO SE ENCONTRARON REGISTROS</h3>
+            <p class="text-gray-400 text-sm mt-2">Intenta con otro término de búsqueda o cambia de categoría.</p>
+        </div>
+    </section>
+
+    <div id="gameModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="modalContainer" class="relative w-full max-w-4xl bg-cyber-800 border-2 border-cyber-400 rounded-2xl shadow-neon-purple overflow-hidden max-h-[90vh] flex flex-col transform scale-95 transition-transform duration-300 cyber-border">
+            
+            <!-- Modal Header with close button -->
+            <div class="relative h-64 sm:h-80 w-full overflow-hidden bg-cyber-900">
+                <img id="modalImage" src="" alt="Game Banner" class="w-full h-full object-cover filter brightness-90">
+                <div class="absolute inset-0 bg-gradient-to-t from-cyber-800 via-cyber-800/40 to-transparent"></div>
+                <button onclick="closeGameModal()" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-cyber-900/80 border border-cyber-400 text-cyber-cyan hover:bg-cyber-magenta hover:text-white transition-all flex items-center justify-center shadow-neon-cyan">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+                <div class="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <span id="modalGenre" class="px-3 py-1 rounded-full bg-cyber-500/80 text-white text-xs font-bold uppercase tracking-wider shadow-neon-purple"></span>
+                        <h2 id="modalTitle" class="text-3xl sm:text-4xl font-black text-white mt-2 text-glow-purple"></h2>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-cyber-900/90 px-4 py-2 rounded-xl border border-cyber-cyan/50 shadow-neon-cyan">
+                        <i class="fa-solid fa-star text-cyber-yellow"></i>
+                        <span id="modalRating" class="text-lg font-bold text-white"></span>
+                        <span class="text-xs text-gray-400">/ 10</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Body Content -->
+            <div class="p-6 sm:p-8 overflow-y-auto space-y-6">
+                <!-- Metadata grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-cyber-900/60 p-4 rounded-xl border border-cyber-600/50">
+                    <div>
+                        <span class="text-xs text-gray-400 block font-mono">LANZAMIENTO</span>
+                        <span id="modalRelease" class="text-sm font-bold text-cyber-cyan"></span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-400 block font-mono">DESARROLLADORA</span>
+                        <span id="modalDev" class="text-sm font-bold text-white"></span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-400 block font-mono">PLATAFORMAS</span>
+                        <span id="modalPlatforms" class="text-sm font-bold text-cyber-300"></span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-400 block font-mono">ESTADO</span>
+                        <span class="text-sm font-bold text-green-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Disponible</span>
+                    </div>
+                </div>
+
+                <!-- Synopsis -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-terminal text-cyber-400"></i> Sinopsis del Título
+                    </h3>
+                    <p id="modalSynopsis" class="text-gray-300 text-sm sm:text-base leading-relaxed"></p>
+                </div>
+
+                <!-- Gallery Screenshots previews inside modal -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-image text-cyber-magenta"></i> Capturas del Sistema
+                    </h3>
+                    <div id="modalScreenshots" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Screenshots will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-4 pt-4 border-t border-cyber-600/50">
+                    <button onclick="handleTrailerClick()" class="flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyber-cyan to-blue-600 text-cyber-900 font-extrabold hover:opacity-90 shadow-neon-cyan transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Ver Tráiler Oficial</span>
+                    </button>
+                    <button onclick="handleBuyClick()" class="flex-1 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyber-400 to-cyber-magenta text-white font-extrabold hover:opacity-90 shadow-neon-purple transition-all flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Obtener / Jugar Ahora</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="customToast" class="fixed bottom-6 right-6 z-50 transform translate-y-28 opacity-0 transition-all duration-300 bg-cyber-800 border-2 border-cyber-cyan text-white px-6 py-4 rounded-xl shadow-neon-cyan flex items-center space-x-3 cyber-border-sm">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-cyber-cyan text-xl"></i>
+        <div>
+            <h4 id="toastTitle" class="font-bold text-sm">Notificación del Sistema</h4>
+            <p id="toastMessage" class="text-xs text-gray-300 mt-0.5">Acción completada con éxito.</p>
+        </div>
+    </div>
+
+    <footer class="bg-cyber-900 border-t border-cyber-600/40 py-12 px-4 sm:px-6 lg:px-8 mt-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded bg-gradient-to-br from-cyber-400 to-cyber-magenta flex items-center justify-center">
+                    <i class="fa-solid fa-gamepad text-white text-sm"></i>
+                </div>
+                <span class="text-lg font-black tracking-wider text-white">NEXUS<span class="text-cyber-cyan">//</span>V</span>
+            </div>
+            <p class="text-xs text-gray-400">© 2026 NEXUS-V Vault. Todos los derechos reservados. Diseñado bajo estándares cyberpunk neón.</p>
+            <div class="flex space-x-4 text-cyber-300">
+                <a href="#" onclick="playCyberSound('click')" class="hover:text-cyber-cyan transition-colors"><i class="fa-brands fa-discord text-lg"></i></a>
+                <a href="#" onclick="playCyberSound('click')" class="hover:text-cyber-cyan transition-colors"><i class="fa-brands fa-x-twitter text-lg"></i></a>
+                <a href="#" onclick="playCyberSound('click')" class="hover:text-cyber-cyan transition-colors"><i class="fa-brands fa-youtube text-lg"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Game Database
+        const gamesData = [
+            {
+                id: 1,
+                title: "NEON PROTOCOL",
+                genre: "Acción",
+                rating: 9.6,
+                release: "12 / 2025",
+                dev: "CyberDreams Studio",
+                platforms: "PC, PS5, XBOX Series X",
+                synopsis: "En las profundidades de Neo-Tokio, un hacker renegado descubre una conspiración corporativa que amenaza con borrar la memoria de la humanidad. Enfréntate a mercenarios cibernéticos con armamento de plasma en un mundo abierto vibrante.",
+                image: "https://placehold.co/800x450/13092b/00f0ff?text=NEON+PROTOCOL",
+                screenshots: [
+                    "https://placehold.co/600x400/22104d/00f0ff?text=Action+Scene+1",
+                    "https://placehold.co/600x400/13092b/8b3dff?text=Combat+Mode",
+                    "https://placehold.co/600x400/381675/ff007f?text=City+View"
+                ]
+            },
+            {
+                id: 2,
+                title: "CHRONO SHIFT: ZERO",
+                genre: "RPG",
+                rating: 9.4,
+                release: "03 / 2026",
+                dev: "Temporal Interactive",
+                platforms: "PC, PS5",
+                synopsis: "Manipula el flujo del tiempo para resolver paradojas cuánticas y derrotar a deidades mecánicas en este RPG de acción inmersivo. Cada decisión altera las líneas temporales y el destino de la civilización estelar.",
+                image: "https://placehold.co/800x450/22104d/8b3dff?text=CHRONO+SHIFT",
+                screenshots: [
+                    "https://placehold.co/600x400/13092b/ff007f?text=Time+Portal",
+                    "https://placehold.co/600x400/381675/00f0ff?text=Skill+Tree",
+                    "https://placehold.co/600x400/22104d/8b3dff?text=Boss+Fight"
+                ]
+            },
+            {
+                id: 3,
+                title: "ASTRAL DRIFTER",
+                genre: "Aventura",
+                rating: 9.1,
+                release: "11 / 2025",
+                dev: "Stellar Nebula Games",
+                platforms: "PC, Nintendo Switch, PS5",
+                synopsis: "Pilota tu nave de última generación a través de nebulosas inexploradas, ruinas alienígenas y anomalías espaciales. Descubre los misterios de una civilización perdida en los confines del universo.",
+                image: "https://placehold.co/800x450/381675/ff007f?text=ASTRAL+DRIFTER",
+                screenshots: [
+                    "https://placehold.co/600x400/13092b/00f0ff?text=Space+Flight",
+                    "https://placehold.co/600x400/22104d/ff007f?text=Alien+Planet",
+                    "https://placehold.co/600x400/381675/8b3dff?text=Explorer"
+                ]
+            },
+            {
+                id: 4,
+                title: "CYBERPUNK RUNAWAY",
+                genre: "Indie",
+                rating: 8.9,
+                release: "01 / 2026",
+                dev: "Pixel Syndicate",
+                platforms: "PC, Mac, Linux",
+                synopsis: "Un juego indie de plataformas y parkour con estética neón vibrante. Corre por los tejados iluminados por anuncios holográficos mientras escapas de la policía antidisturbios y drones de vigilancia autónomos.",
+                image: "https://placehold.co/800x450/13092b/ffe600?text=CYBERPUNK+RUNAWAY",
+                screenshots: [
+                    "https://placehold.co/600x400/381675/ffe600?text=Rooftop+Run",
+                    "https://placehold.co/600x400/22104d/00f0ff?text=Neon+Streets",
+                    "https://placehold.co/600x400/13092b/ff007f?text=Chase+Scene"
+                ]
+            },
+            {
+                id: 5,
+                title: "NETRUNNER TACTICS",
+                genre: "Estrategia",
+                rating: 9.3,
+                release: "02 / 2026",
+                dev: "Matrix Forge",
+                platforms: "PC, Tablet",
+                synopsis: "Comanda escuadrones de comandos cibernéticos y expertos en guerra electrónica en batallas tácticas por turnos. Infiltra servidores ultra seguros y domina las redes corporativas mundiales.",
+                image: "https://placehold.co/800x450/22104d/00f0ff?text=NETRUNNER+TACTICS",
+                screenshots: [
+                    "https://placehold.co/600x400/13092b/8b3dff?text=Grid+Combat",
+                    "https://placehold.co/600x400/381675/ffe600?text=Hacking+Terminal",
+                    "https://placehold.co/600x400/22104d/00f0ff?text=Tactical+Map"
+                ]
+            },
+            {
+                id: 6,
+                title: "VOID SHADOW",
+                genre: "Acción",
+                rating: 9.5,
+                release: "10 / 2025",
+                dev: "Dark Matter Interactive",
+                platforms: "PC, PS5, XBOX Series X",
+                synopsis: "Asesino cibernético equipado con tecnología de camuflaje cuántico y cuchillas monofilamento. Ejecuta misiones de sigilo letal en megaciudades oscuras gobernadas por syndicatos corruptos.",
+                image: "https://placehold.co/800x450/381675/00f0ff?text=VOID+SHADOW",
+                screenshots: [
+                    "https://placehold.co/600x400/13092b/ff007f?text=Stealth+Kill",
+                    "https://placehold.co/600x400/22104d/00f0ff?text=Dark+Alley",
+                    "https://placehold.co/600x400/381675/8b3dff?text=Cyber+Blade"
+                ]
+            }
+        ];
+
+        let currentFilter = 'todos';
+        let searchQuery = '';
+        let soundEnabled = true;
+
+        // Sound Simulator using Web Audio API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playCyberSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.08);
+                } else if (type === 'modal') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.15);
+                }
+            } catch (e) {
+                console.log("Audio not allowed yet");
+            }
+        }
+
+        // Toggle Sound button
+        document.getElementById('soundToggle').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+                showToast("Audio Activado", "Efectos sonoros cibernéticos habilitados.");
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark';
+                showToast("Audio Silenciado", "Efectos sonoros deshabilitados.");
+            }
+        });
+
+        // Render Games in Grid
+        function renderGames() {
+            const grid = document.getElementById('gamesGrid');
+            const noResults = document.getElementById('noResults');
+            grid.innerHTML = '';
+
+            const filtered = gamesData.filter(game => {
+                const matchesGenre = currentFilter === 'todos' || game.genre.toLowerCase() === currentFilter.toLowerCase();
+                const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      game.synopsis.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                      game.dev.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesGenre && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            filtered.forEach(game => {
+                const card = document.createElement('div');
+                card.className = "group relative bg-cyber-800/90 rounded-2xl overflow-hidden border border-cyber-600/60 hover:border-cyber-cyan shadow-card-glow hover:shadow-neon-cyan transition-all duration-300 transform hover:-translate-y-2 flex flex-col cyber-border";
+                card.innerHTML = `
+                    <div class="relative h-52 w-full overflow-hidden bg-cyber-900">
+                        <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 filter brightness-95">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-800 via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-cyber-900/80 border border-cyber-400 text-cyber-cyan text-xs font-bold uppercase tracking-wider shadow-neon-cyan">
+                            ${game.genre}
+                        </span>
+                        <div class="absolute top-3 right-3 flex items-center space-x-1 bg-cyber-900/90 px-2.5 py-1 rounded-lg border border-cyber-yellow/40 text-cyber-yellow text-xs font-bold">
+                            <i class="fa-solid fa-star"></i>
+                            <span>${game.rating}</span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow justify-between">
+                        <div>
+                            <h3 class="text-xl font-black text-white group-hover:text-cyber-cyan transition-colors mb-2">${game.title}</h3>
+                            <p class="text-gray-400 text-xs sm:text-sm line-clamp-2 mb-4">${game.synopsis}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t border-cyber-600/40">
+                            <span class="text-xs text-cyber-300 font-mono"><i class="fa-solid fa-calendar-days mr-1"></i> ${game.release}</span>
+                            <button onclick="openGameModal(${game.id})" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyber-500 to-cyber-600 hover:from-cyber-400 hover:to-cyber-magenta text-white text-xs font-bold shadow-neon-purple transition-all flex items-center space-x-2">
+                                <span>Ver Ficha</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter functionality
+        function filterGames(genre) {
+            currentFilter = genre;
+            playCyberSound('click');
+            
+            // Update active state of filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-filter') === genre) {
+                    btn.className = "filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gradient-to-r from-cyber-500 to-cyber-600 text-white shadow-neon-purple transition-all cyber-border-sm";
+                } else {
+                    btn.className = "filter-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-cyber-800 text-gray-300 border border-cyber-600 hover:border-cyber-cyan hover:text-cyber-cyan transition-all cyber-border-sm";
+                }
+            });
+
+            renderGames();
+        }
+
+        // Search inputs listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderGames();
+        });
+        document.getElementById('searchInputMobile').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderGames();
+        });
+
+        // Modal Functions
+        function openGameModal(gameId) {
+            const game = gamesData.find(g => g.id === gameId);
+            if (!game) return;
+
+            playCyberSound('modal');
+
+            document.getElementById('modalImage').src = game.image;
+            document.getElementById('modalGenre').innerText = game.genre;
+            document.getElementById('modalTitle').innerText = game.title;
+            document.getElementById('modalRating').innerText = game.rating;
+            document.getElementById('modalRelease').innerText = game.release;
+            document.getElementById('modalDev').innerText = game.dev;
+            document.getElementById('modalPlatforms').innerText = game.platforms;
+            document.getElementById('modalSynopsis').innerText = game.synopsis;
+
+            // Render screenshots
+            const screenshotsContainer = document.getElementById('modalScreenshots');
+            screenshotsContainer.innerHTML = '';
+            game.screenshots.forEach((shot, idx) => {
+                const img = document.createElement('img');
+                img.src = shot;
+                img.alt = `Captura ${idx + 1}`;
+                img.className = "rounded-lg border border-cyber-600 hover:border-cyber-cyan transition-all shadow-md h-28 w-full object-cover";
+                screenshotsContainer.appendChild(img);
+            });
+
+            const modal = document.getElementById('gameModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            container.classList.remove('scale-95');
+            container.classList.add('scale-100');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGameModal() {
+            playCyberSound('click');
+            const modal = document.getElementById('gameModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            container.classList.remove('scale-100');
+            container.classList.add('scale-95');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openFeaturedModal() {
+            openGameModal(1); // Open Neon Protocol as featured
+        }
+
+        // Action button handlers inside modal
+        function handleTrailerClick() {
+            playCyberSound('click');
+            showToast("Tráiler Solicitud", "Iniciando stream de video oficial del juego...");
+        }
+
+        function handleBuyClick() {
+            playCyberSound('click');
+            showToast("Acceso Concedido", "¡Juego añadido al carrito / Licencia de acceso activada!");
+        }
+
+        // Toast notification system
+        function showToast(title, message) {
+            const toast = document.getElementById('customToast');
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('translate-y-28', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-28', 'opacity-0');
+            }, 3500);
+        }
+
+        // Close modal on outside click
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('gameModal');
+            if (e.target === modal) {
+                closeGameModal();
+            }
+        });
+
+        // Initialize App on load
+        window.onload = function() {
+            renderGames();
+        };
+    </script>
+</body>
+</html>
